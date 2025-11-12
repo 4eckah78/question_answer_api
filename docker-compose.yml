@@ -1,0 +1,27 @@
+
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: qa_db
+      POSTGRES_USER: qa_user
+      POSTGRES_PASSWORD: qa_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5433:5432"
+
+  api:
+    build: .
+    command: bash -c "python manage.py migrate && python manage.py runserver 127.0.0.1:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    env_file:
+      - .env
+
+volumes:
+  postgres_data:
